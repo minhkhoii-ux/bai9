@@ -1,0 +1,45 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Maven
+        run: mvn clean package
+
+      - name: Run jar (verify)
+        run: java -jar target/*.jar
+
+      # 4. Build + test
+      - name: Build and Test
+        run: mvn clean test
+
+      # 5. Đóng gói jar
+      - name: Package
+        run: mvn package
+
+  # 6. Chạy thử jar (verify bài 8)
+      - name: Run jar
+        run: java -jar target/*.jar
+
+  # 7. Kiểm tra log file (bài 9)
+      - name: Check log file
+        run: |
+           ls -la logs || echo "No logs folder yet"
+           cat logs/app.log || echo "No log file yet"
